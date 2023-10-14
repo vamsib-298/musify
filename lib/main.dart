@@ -6,7 +6,7 @@ import 'package:musify/splash_screen.dart';
 
 void main() {
   runApp(const MyApp(
-    title: '',
+    title: 'Musify',
   ));
 }
 
