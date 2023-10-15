@@ -17,3 +17,8 @@ samples, guidance on mobile development, and a full API reference.
 this is a new read me line => its a music app
 
 ** learning some amazing animation related videos on youtube from the flutter developer community
+
+** 15/10/23 
+   1.upload a song from device to the app 
+   2. list all songs
+   3. music ui
