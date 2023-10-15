@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 /*
 void main() {
   runApp(const MyApp(
@@ -19,7 +22,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const SplashScreen(
-        title: 'Welcome To Musify',
+        title: '',
       ),
     );
   }
@@ -83,15 +86,13 @@ class _MyHomePageState extends State<MyHomePage> {
           selectedIndex: _currentIndex,
           items: <BottomNavyBarItem>[
             BottomNavyBarItem(
-                icon: const Icon(Icons.home), title: const Text('Home')),
+                icon: const Icon(Icons.home), title: const Text('')),
             BottomNavyBarItem(
-                icon: const Icon(Icons.search), title: const Text('Search')),
+                icon: const Icon(Icons.search), title: const Text('')),
             BottomNavyBarItem(
-                icon: const Icon(Icons.library_add),
-                title: const Text('Library')),
+                icon: const Icon(Icons.library_add), title: const Text('')),
             BottomNavyBarItem(
-                icon: const Icon(Icons.settings),
-                title: const Text('Settings')),
+                icon: const Icon(Icons.settings), title: const Text('')),
           ],
           onItemSelected: (index) {
             setState(() {
@@ -103,7 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-*/
+
+
+
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -209,6 +212,86 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
         body: _screens[_currentIndex],
+      ),
+    );
+  }
+}
+*/
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "Musify",
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      home: AllSongs(),
+    );
+  }
+}
+
+class AllSongs extends StatefulWidget {
+  const AllSongs({super.key});
+
+  @override
+  State<AllSongs> createState() => _AllSongsState();
+}
+
+class _AllSongsState extends State<AllSongs> {
+  @override
+  void initState() {
+    super.initState();
+    requestPermission();
+  }
+
+  void requestPermission() {
+    Permission.storage.request();
+  }
+
+  final _audioQuery = OnAudioQuery();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Musify'),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.search),
+          ),
+        ],
+      ),
+      body: FutureBuilder<List<SongModel>>(
+        future: _audioQuery.querySongs(
+            sortType: null,
+            orderType: OrderType.ASC_OR_SMALLER,
+            uriType: UriType.EXTERNAL,
+            ignoreCase: true),
+        builder: (context, item) {
+          if (item.data == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (item.data!.isEmpty) {
+            return Center(child: Text('No Songs Found'));
+          }
+          return ListView.builder(
+            itemBuilder: (context, index) => ListTile(
+              leading: const Icon(Icons.music_note),
+              title: Text(item.data![index].displayNameWOExt),
+              subtitle: Text("${item.data![index].artist}"),
+              trailing: Icon(Icons.more_horiz),
+            ),
+            itemCount: item.data!.length,
+          );
+        },
       ),
     );
   }
