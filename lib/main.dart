@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -244,6 +247,18 @@ class AllSongs extends StatefulWidget {
 }
 
 class _AllSongsState extends State<AllSongs> {
+  final OnAudioQuery _audioQuery = OnAudioQuery();
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  playSong(String? uri) {
+    try {
+      _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
+      _audioPlayer.play();
+    } on Exception {
+      log("Error Parsing Song" as num);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -254,7 +269,6 @@ class _AllSongsState extends State<AllSongs> {
     Permission.storage.request();
   }
 
-  final _audioQuery = OnAudioQuery();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -284,10 +298,15 @@ class _AllSongsState extends State<AllSongs> {
           }
           return ListView.builder(
             itemBuilder: (context, index) => ListTile(
-              leading: const Icon(Icons.music_note),
               title: Text(item.data![index].displayNameWOExt),
               subtitle: Text("${item.data![index].artist}"),
               trailing: Icon(Icons.more_horiz),
+              leading: const CircleAvatar(
+                child: Icon(Icons.music_note),
+              ),
+              onTap: () {
+                playSong(item.data![index].uri);
+              },
             ),
             itemCount: item.data!.length,
           );
