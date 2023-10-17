@@ -1,9 +1,9 @@
 import 'dart:math';
 
+import 'package:Musify/screens/playing_song.dart';
+import 'package:Musify/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:musify/screens/PlayingSong.dart';
-import 'package:musify/splash_screen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -36,6 +36,13 @@ class _AllSongsState extends State<AllSongs> {
   final OnAudioQuery _audioQuery = OnAudioQuery();
   final AudioPlayer _audioPlayer = AudioPlayer();
 
+  @override
+  void initState() {
+    super.initState();
+    requestPermission();
+  }
+
+  //
   playSong(String? uri) {
     try {
       _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
@@ -43,12 +50,6 @@ class _AllSongsState extends State<AllSongs> {
     } on Exception {
       log("Error Parsing Song" as num);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    requestPermission();
   }
 
   void requestPermission() {

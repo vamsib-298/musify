@@ -1,6 +1,6 @@
+import 'package:Musify/main.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:musify/main.dart';
 import 'package:page_transition/page_transition.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -22,7 +22,8 @@ class SplashScreen extends StatelessWidget {
           ),
           const Text(
             'Welcome To Musify',
-            style: TextStyle(fontSize: 22, color: Colors.blue),
+            style: TextStyle(
+                fontSize: 22, color: Color.fromARGB(255, 233, 236, 239)),
           )
         ]),
         splashIconSize: 300,

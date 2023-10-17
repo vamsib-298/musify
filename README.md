@@ -18,7 +18,16 @@ this is a new read me line => its a music app
 
 ** learning some amazing animation related videos on youtube from the flutter developer community
 
-** 15/10/23 
-   1.upload a song from device to the app 
-   2. list all songs
-   3. music ui
+** 15/10/23  **
+   - upload a song from device to the app 
+   - list all songs
+   - music ui
+
+** 17/10/23 **
+   - next song and previous song buttons 
+   - search a song
+   - create a playlist
+      - name
+      - add songs and delete the songs from playlist
+   - debugging in flutter app
+   - logging in flutter apps 
