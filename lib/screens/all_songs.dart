@@ -69,8 +69,10 @@ class _AllSongsState extends State<AllSongs> {
               title: Text(item.data![index].displayNameWOExt),
               subtitle: Text("${item.data![index].artist}"),
               trailing: Icon(Icons.more_horiz),
-              leading: const CircleAvatar(
-                child: Icon(Icons.music_note),
+              leading: QueryArtworkWidget(
+                id: item.data![index].id,
+                type: ArtworkType.AUDIO,
+                nullArtworkWidget: Image.asset('assets/images/musicfly.png'),
               ),
               onTap: () {
                 Navigator.push(
