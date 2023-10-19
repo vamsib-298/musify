@@ -127,7 +127,11 @@ class _NowPlayingState extends State<NowPlaying> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (widget.audioPlayer.hasPrevious) {
+                              widget.audioPlayer.seekToPrevious();
+                            }
+                          },
                           icon: Icon(
                             Icons.skip_previous,
                             size: 40.0,

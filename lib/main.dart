@@ -1,4 +1,4 @@
-import 'package:Musify/splash_screen.dart';
+import 'package:Musify/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
