@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class NowPlaying extends StatefulWidget {
@@ -28,7 +29,15 @@ class _NowPlayingState extends State<NowPlaying> {
   void playSong() {
     try {
       widget.audioPlayer.setAudioSource(
-        AudioSource.uri(Uri.parse(widget.songModel.uri!)),
+        AudioSource.uri(
+          Uri.parse(widget.songModel.uri!),
+          tag: MediaItem(
+            id: '${widget.songModel.id}',
+            album: "${widget.songModel.album}",
+            title: widget.songModel.displayNameWOExt,
+            artUri: Uri.parse('https://example.com/albumart.jpg'),
+          ),
+        ),
       );
       widget.audioPlayer.play();
       _isPlaying = true;
@@ -155,7 +164,11 @@ class _NowPlayingState extends State<NowPlaying> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (widget.audioPlayer.hasNext) {
+                              widget.audioPlayer.seekToNext();
+                            }
+                          },
                           icon: const Icon(
                             Icons.skip_next,
                             size: 40.0,
