@@ -13,7 +13,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   //variable
-  Color bgColor = Colors.red;
+  Color bgColor = Color.fromARGB(255, 177, 229, 20);
   //player
   final AudioPlayer _player = AudioPlayer();
 
@@ -31,14 +31,17 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (context, item) {
           if (item.hasData) {
             Map? jsonMap = json.decode(item.data!);
-            List? songs = jsonMap?.keys.toList();
-            // List? songs = jsonMap?.keys.where((element) => element.endsWith(".mp3")).toList();
+            // List? songs = jsonMap?.keys.toList();
+            List? songs = jsonMap?.keys
+                .where((element) => element.endsWith(".mp3"))
+                .toList();
 
             return ListView.builder(
               itemCount: songs?.length,
               itemBuilder: (context, index) {
                 var path = songs![index].toString();
-                var title = path.split("/").last.toString(); //get file name
+                var title =
+                    path.split("assets/songs/").last.toString(); //get file name
                 title = title.replaceAll("%20", ""); //remove %20 characters
                 title = title.split(".").first;
 
@@ -48,24 +51,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
                   decoration: BoxDecoration(
                     color: bgColor,
-                    borderRadius: BorderRadius.circular(4.0),
+                    borderRadius: BorderRadius.circular(20.0),
                     border: Border.all(
-                        color: Colors.white70,
-                        width: 1.0,
+                        color: Color.fromARGB(179, 0, 0, 0),
+                        width: 3.0,
                         style: BorderStyle.solid),
                   ),
                   child: ListTile(
-                    textColor: Colors.white,
+                    textColor: Color.fromARGB(255, 0, 0, 0),
                     title: Text(title),
                     subtitle: Text(
-                      "path: $path",
-                      style:
-                          const TextStyle(color: Colors.white70, fontSize: 12),
+                      " $path",
+                      style: const TextStyle(
+                          color: Color.fromARGB(179, 26, 203, 206),
+                          fontSize: 13),
                     ),
                     leading: const Icon(
                       Icons.audiotrack,
-                      size: 20,
-                      color: Colors.white70,
+                      size: 33,
+                      color: Color.fromARGB(179, 255, 3, 3),
                     ),
                     onTap: () async {
                       toast(context, "Playing: $title");

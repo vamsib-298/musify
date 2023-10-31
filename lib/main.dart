@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:musify/screens/all_songs.dart';
+import 'package:musify/screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Musify',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: const MyHomePage(title: 'Musify'),
+      home: SplashScreen(title: 'Musify'),
     );
   }
 }
