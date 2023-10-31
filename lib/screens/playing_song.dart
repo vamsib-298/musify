@@ -7,9 +7,13 @@ import 'package:on_audio_query/on_audio_query.dart';
 
 class NowPlaying extends StatefulWidget {
   const NowPlaying(
-      {super.key, required this.songModel, required this.audioPlayer});
+      {super.key,
+      required this.songModel,
+      required this.audioPlayer,
+      required this.songs});
   final SongModel songModel;
   final AudioPlayer audioPlayer;
+  final List<SongModel> songs;
 
   @override
   State<NowPlaying> createState() => _NowPlayingState();

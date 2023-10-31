@@ -8,7 +8,7 @@ package = "com.example.musify">
     
 
     <application
-        android:label="musify"
+        android:label="Musify"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

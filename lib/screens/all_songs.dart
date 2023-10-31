@@ -1,121 +1,101 @@
-import 'dart:developer';
+import 'dart:convert';
 
-import 'package:Musify/screens/playing_song.dart';
-import 'package:easy_search_bar/easy_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:permission_handler/permission_handler.dart';
 
-class AllSongs extends StatefulWidget {
-  const AllSongs({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
 
   @override
-  State<AllSongs> createState() => _AllSongsState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _AllSongsState extends State<AllSongs> {
-  // Create an OnAudioQuery object to query for audio files on the device.
-  final OnAudioQuery _audioQuery = OnAudioQuery();
+class _MyHomePageState extends State<MyHomePage> {
+  //variable
+  Color bgColor = Colors.red;
+  //player
+  final AudioPlayer _player = AudioPlayer();
 
-  // Create an AudioPlayer object to play audio files.
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
-  // Create a list to store the available songs.
-  List<SongModel> availableSongs = [];
-
-  // Create a string variable to store the search value.
-  String searchValue = '';
-
-  // Initialize the state.
-  @override
-  void initState() {
-    super.initState();
-    requestPermission();
-    getAvailableSongs();
-  }
-
-  // Request the storage permission.
-  void requestPermission() {
-    Permission.storage.request();
-  }
-
-  // Get the available songs from the device.
-  Future<void> getAvailableSongs() async {
-    availableSongs = await _audioQuery.querySongs(
-        sortType: null,
-        orderType: OrderType.ASC_OR_SMALLER,
-        uriType: UriType.EXTERNAL,
-        ignoreCase: true);
-  }
-
-  // Play a song.
-  playSong(String? uri) {
-    try {
-      _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri!)));
-      _audioPlayer.play();
-    } on Exception {
-      log("Error Parsing Song");
-    }
-  }
-
-  // Build the widget.
   @override
   Widget build(BuildContext context) {
-    // If the available songs list is empty, get the available songs.
-    if (availableSongs.isEmpty) {
-      getAvailableSongs();
-    }
-
-    // Return a Scaffold widget with an EasySearchBar app bar and a ListView body.
     return Scaffold(
-      appBar: EasySearchBar(
-        title: const Text('Musify'),
-        iconTheme: const IconThemeData(color: Color.fromARGB(255, 228, 248, 6)),
-        onSearch: (value) {
-          setState(() {
-            searchValue = value;
-          });
-        },
+      backgroundColor: bgColor,
+      appBar: AppBar(
+        title: Text(widget.title),
+        backgroundColor: bgColor,
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          // Filter the songs based on the search value.
-          if (searchValue.isEmpty ||
-              availableSongs[index]
-                  .displayNameWOExt
-                  .toLowerCase()
-                  .contains(searchValue.toLowerCase())) {
-            // Render a ListTile for each song.
-            return ListTile(
-              title: Text(availableSongs[index].displayNameWOExt),
-              subtitle: Text("${availableSongs[index].artist}"),
-              trailing: Icon(Icons.more_horiz),
-              leading: QueryArtworkWidget(
-                id: availableSongs[index].id,
-                type: ArtworkType.AUDIO,
-                nullArtworkWidget: Image.asset('assets/images/musicfly.png'),
-              ),
-              onTap: () {
-                // Navigate to the NowPlaying screen when a song is tapped.
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NowPlaying(
-                      songModel: availableSongs[index],
-                      audioPlayer: _audioPlayer,
+      body: FutureBuilder<String>(
+        future: DefaultAssetBundle.of(context).loadString("AssetManifest.json"),
+        // future: rootBundle.loadString("AssetManifest.json"),
+        builder: (context, item) {
+          if (item.hasData) {
+            Map? jsonMap = json.decode(item.data!);
+            List? songs = jsonMap?.keys.toList();
+            // List? songs = jsonMap?.keys.where((element) => element.endsWith(".mp3")).toList();
+
+            return ListView.builder(
+              itemCount: songs?.length,
+              itemBuilder: (context, index) {
+                var path = songs![index].toString();
+                var title = path.split("/").last.toString(); //get file name
+                title = title.replaceAll("%20", ""); //remove %20 characters
+                title = title.split(".").first;
+
+                return Container(
+                  margin:
+                      const EdgeInsets.only(top: 10.0, left: 15.0, right: 15.0),
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(4.0),
+                    border: Border.all(
+                        color: Colors.white70,
+                        width: 1.0,
+                        style: BorderStyle.solid),
+                  ),
+                  child: ListTile(
+                    textColor: Colors.white,
+                    title: Text(title),
+                    subtitle: Text(
+                      "path: $path",
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 12),
                     ),
+                    leading: const Icon(
+                      Icons.audiotrack,
+                      size: 20,
+                      color: Colors.white70,
+                    ),
+                    onTap: () async {
+                      toast(context, "Playing: $title");
+                      //play this song
+                      await _player.setAsset(path);
+                      await _player.play();
+                    },
                   ),
                 );
               },
             );
           } else {
-            // Render an empty container for the songs that don't match the search value.
-            return Container();
+            return const Center(
+              child: Text("No Songs in the Assets"),
+            );
           }
         },
-        itemCount: availableSongs.length,
       ),
     );
+  }
+
+  //A toast method
+  void toast(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        text,
+        textAlign: TextAlign.center,
+      ),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)),
+    ));
   }
 }
