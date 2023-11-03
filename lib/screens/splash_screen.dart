@@ -31,7 +31,7 @@ class SplashScreen extends StatelessWidget {
         backgroundColor: Colors.black26,
         duration: 3000,
         pageTransitionType: PageTransitionType.bottomToTop,
-        nextScreen: MyHomePage(
+        nextScreen: AllSongs(
           title: 'Musify',
         ));
   }
