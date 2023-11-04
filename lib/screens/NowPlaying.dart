@@ -10,10 +10,7 @@ class NowPlaying extends StatefulWidget {
   final AudioPlayer audioPlayer;
 
   const NowPlaying(
-      {super.key,
-      required this.songModelList,
-      required this.audioPlayer,
-      required songUris});
+      {super.key, required this.songModelList, required this.audioPlayer});
 
   @override
   State<NowPlaying> createState() => _NowPlayingState();

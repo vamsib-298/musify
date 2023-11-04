@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:musify/provider/song_model.dart';
-import 'package:musify/screens/splash_screen.dart';
+import 'package:musify/screens/all_songs.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -22,12 +22,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Music Player',
+      title: 'Musify',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const SplashScreen(
+      home: const AllSongs(
         title: '',
       ),
     );

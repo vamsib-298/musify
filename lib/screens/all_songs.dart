@@ -1,132 +1,106 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:musify/provider/song_model.dart';
-import 'package:on_audio_query/on_audio_query.dart';
-import 'package:provider/provider.dart';
-
-import '../../widgets/MusicTile.dart';
-import 'NowPlaying.dart';
 
 class AllSongs extends StatefulWidget {
-  const AllSongs({super.key, required String title});
+  const AllSongs({super.key, required this.title});
+  final String title;
 
   @override
-  State<AllSongs> createState() => _AllSongsState();
+  State<AllSongs> createState() => _MyHomePageState();
 }
 
-class _AllSongsState extends State<AllSongs> {
-  final OnAudioQuery _audioQuery = OnAudioQuery();
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
-  List<SongModel> allSongs = [];
-
-  @override
-  void initState() {
-    super.initState();
-    requestPermission();
-  }
-
-  requestPermission() async {
-    if (Platform.isAndroid) {
-      bool permissionStatus = await _audioQuery.permissionsStatus();
-      if (!permissionStatus) {
-        await _audioQuery.permissionsRequest();
-      }
-      setState(() {});
-    }
-  }
+class _MyHomePageState extends State<AllSongs> {
+  //variable
+  Color bgColor = const Color.fromARGB(255, 222, 244, 54);
+  //player
+  final AudioPlayer _player = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
-        title: const Text(
-          "Music Player",
-          style: TextStyle(color: Colors.white),
-        ),
-        elevation: 2,
+        title: Text(widget.title),
+        backgroundColor: bgColor,
       ),
-      body: FutureBuilder<List<SongModel>>(
-        future: _audioQuery.querySongs(
-          sortType: null,
-          orderType: OrderType.ASC_OR_SMALLER,
-          uriType: UriType.EXTERNAL,
-          ignoreCase: true,
-        ),
+      body: FutureBuilder<String>(
+        future: DefaultAssetBundle.of(context).loadString("AssetManifest.json"),
+        // future: rootBundle.loadString("AssetManifest.json"),
         builder: (context, item) {
-          if (item.data == null) {
-            return Center(
-              child: Column(
-                children: const [
-                  CircularProgressIndicator(),
-                  SizedBox(
-                    height: 10.0,
+          if (item.hasData) {
+            Map? jsonMap = json.decode(item.data!);
+            //List? songs = jsonMap?.keys.toList();
+            List? songs = jsonMap?.keys
+                .where((element) => element.endsWith(".mp3"))
+                .toList();
+
+            return ListView.builder(
+              itemCount: songs?.length,
+              itemBuilder: (context, index) {
+                var path = songs![index].toString();
+                var title = path.split("/").last.toString(); //get file name
+                title = title.replaceAll("%20", ""); //remove %20 characters
+                title = title.split(".").first;
+
+                return Container(
+                  margin: const EdgeInsets.only(
+                    top: 10.0,
+                    left: 15.0,
+                    right: 15.0,
                   ),
-                  Text("Loading")
-                ],
-              ),
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(22.0),
+                    border: Border.all(
+                        color: const Color.fromARGB(179, 22, 20, 20),
+                        width: 3.0,
+                        style: BorderStyle.solid),
+                  ),
+                  child: ListTile(
+                    textColor: const Color.fromARGB(255, 0, 0, 0),
+                    title: Text(title),
+                    subtitle: Text(
+                      "path: $path",
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                    leading: const Icon(
+                      Icons.audiotrack,
+                      size: 35,
+                      color: Color.fromARGB(179, 164, 48, 48),
+                    ),
+                    onTap: () async {
+                      toast(context, "Playing: $title");
+                      //play this song
+                      await _player.setAsset(path);
+                      await _player.play();
+                    },
+                  ),
+                );
+              },
+            );
+          } else {
+            return const Center(
+              child: Text("No Songs in the Assets"),
             );
           }
-          if (item.data!.isEmpty) {
-            return const Center(child: Text("Nothing found!"));
-          }
-          return Stack(
-            children: [
-              ListView.builder(
-                itemCount: item.data!.length,
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 60),
-                itemBuilder: (context, index) {
-                  allSongs.addAll(item.data!);
-                  return GestureDetector(
-                    onTap: () {
-                      context
-                          .read<SongModelProvider>()
-                          .setId(item.data![index].id);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => NowPlaying(
-                                    songModelList: [item.data![index]],
-                                    audioPlayer: _audioPlayer,
-                                    songUris: null,
-                                  )));
-                    },
-                    child: MusicTile(
-                      songModel: item.data![index],
-                    ),
-                  );
-                },
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NowPlaying(
-                                  songModelList: allSongs,
-                                  audioPlayer: _audioPlayer,
-                                  songUris: null,
-                                )));
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.fromLTRB(0, 0, 15, 15),
-                    child: const CircleAvatar(
-                      radius: 30,
-                      child: Icon(
-                        Icons.play_arrow,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
         },
       ),
     );
+  }
+
+  //A toast method
+  void toast(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        text,
+        textAlign: TextAlign.center,
+      ),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50.0)),
+    ));
   }
 }
