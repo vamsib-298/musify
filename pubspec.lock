@@ -49,14 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.16"
-  audio_video_progress_bar:
-    dependency: "direct main"
-    description:
-      name: audio_video_progress_bar
-      sha256: f825c6c63e5bbb527005e8a8fa2a066d99f15a2e6387e56382604d49870c9ff3
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.0"
   audioplayers:
     dependency: "direct main"
     description:

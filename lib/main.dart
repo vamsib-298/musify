@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
       ),
       home: const AllSongs(
-        title: '',
+        title: 'Musify',
       ),
     );
   }

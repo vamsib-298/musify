@@ -8,13 +8,14 @@ class AllSongs extends StatefulWidget {
   final String title;
 
   @override
-  State<AllSongs> createState() => _MyHomePageState();
+  State<AllSongs> createState() => _AllSongsState();
 }
 
-class _MyHomePageState extends State<AllSongs> {
+class _AllSongsState extends State<AllSongs> {
   //variable
-  Color bgColor = const Color.fromARGB(255, 222, 244, 54);
+  Color bgColor = const Color.fromARGB(255, 142, 93, 90);
   //player
+
   final AudioPlayer _player = AudioPlayer();
 
   @override
@@ -27,11 +28,9 @@ class _MyHomePageState extends State<AllSongs> {
       ),
       body: FutureBuilder<String>(
         future: DefaultAssetBundle.of(context).loadString("AssetManifest.json"),
-        // future: rootBundle.loadString("AssetManifest.json"),
         builder: (context, item) {
           if (item.hasData) {
             Map? jsonMap = json.decode(item.data!);
-            //List? songs = jsonMap?.keys.toList();
             List? songs = jsonMap?.keys
                 .where((element) => element.endsWith(".mp3"))
                 .toList();
@@ -45,22 +44,20 @@ class _MyHomePageState extends State<AllSongs> {
                 title = title.split(".").first;
 
                 return Container(
-                  margin: const EdgeInsets.only(
-                    top: 10.0,
-                    left: 15.0,
-                    right: 15.0,
-                  ),
+                  margin:
+                      const EdgeInsets.only(top: 10.0, left: 15.0, right: 15.0),
                   padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
                   decoration: BoxDecoration(
-                    color: Colors.black12,
-                    borderRadius: BorderRadius.circular(22.0),
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(4.0),
                     border: Border.all(
-                        color: const Color.fromARGB(179, 22, 20, 20),
-                        width: 3.0,
-                        style: BorderStyle.solid),
+                      color: Colors.white70,
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
                   ),
                   child: ListTile(
-                    textColor: const Color.fromARGB(255, 0, 0, 0),
+                    textColor: Colors.white,
                     title: Text(title),
                     subtitle: Text(
                       "path: $path",
@@ -69,12 +66,13 @@ class _MyHomePageState extends State<AllSongs> {
                     ),
                     leading: const Icon(
                       Icons.audiotrack,
-                      size: 35,
-                      color: Color.fromARGB(179, 164, 48, 48),
+                      size: 20,
+                      color: Colors.white70,
                     ),
                     onTap: () async {
                       toast(context, "Playing: $title");
                       //play this song
+
                       await _player.setAsset(path);
                       await _player.play();
                     },
@@ -90,6 +88,12 @@ class _MyHomePageState extends State<AllSongs> {
         },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _player.dispose();
   }
 
   //A toast method
